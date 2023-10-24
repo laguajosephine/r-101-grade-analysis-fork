@@ -51,10 +51,40 @@ ggplot(grades, aes(x=Exam)) +
 # Question 5
 
 ```{r}
+rename(grades, "grp_01"="grp_1")
 knitr::kable(grades |> 
   group_by(Group) |>
   summarise(n()),
   col.names = c("Group", "Number of students"))
 ```
 
+# Question 6
+
+```{r}
+ggplot(grades, aes(x=Group))+
+  geom_bar(na.rm=TRUE)
+```
+
+# Question 7
+First representation:
+```{r}
+ggplot(grades, aes(x=Exam))+
+  geom_bar(na.rm=TRUE)+
+  facet_wrap(~Group)
+```
+
+Second representation:
+```{r}
+ggplot(grades, aes(x=Exam, fill=Group))+
+  geom_bar(na.rm=TRUE)
+```
+
+# Question 8
+
+```{r}
+knitr::kable(grades |>
+  group_by(Group) |>
+  summarise(sum(is.na(Exam))),
+  col.names= c("Group", "Number of students who missed the exam"))
+```
 
