@@ -40,3 +40,11 @@ miss_exam <- grades |>
   count(is.na(Exam))
 ```
 `r miss_exam[2,2]` students didn't take the final exam.
+
+# Question 4
+
+```{r}
+ggplot(grades, aes(x=Exam)) +
+  geom_bar(na.rm=TRUE)
+```
+
