@@ -24,10 +24,6 @@ grades <- vroom("grades.csv")
 # Question 2
 
 ```{r}
-grades |> summarise(anyNA(Exam))
-```
-
-```{r}
 knitr::kable(grades |> 
                summarise(min(Exam, na.rm = TRUE), 
                          max(Exam,na.rm = TRUE), 
@@ -37,4 +33,10 @@ knitr::kable(grades |>
 )
 ```
 
+# Question 3
 
+```{r}
+miss_exam <- grades |> 
+  count(is.na(Exam))
+```
+`r miss_exam[2,2]` students didn't take the final exam.
