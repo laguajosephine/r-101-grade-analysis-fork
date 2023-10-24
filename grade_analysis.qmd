@@ -21,3 +21,20 @@ library(vroom)
 grades <- vroom("grades.csv")
 ```
 
+# Question 2
+
+```{r}
+grades |> summarise(anyNA(Exam))
+```
+
+```{r}
+knitr::kable(grades |> 
+               summarise(min(Exam, na.rm = TRUE), 
+                         max(Exam,na.rm = TRUE), 
+                         median(Exam,na.rm = TRUE), 
+                         mean(Exam,na.rm = TRUE)),
+             col.names = c("Minimum grade", "Maximum grade", "Median grade", "Mean grade")
+)
+```
+
+
