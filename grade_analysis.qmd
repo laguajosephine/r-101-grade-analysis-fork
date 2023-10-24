@@ -17,6 +17,7 @@ library(vroom)
 # Question 1
 
 ```{r question 1}
-
+#| message: false
+grades <- vroom("grades.csv")
 ```
 
