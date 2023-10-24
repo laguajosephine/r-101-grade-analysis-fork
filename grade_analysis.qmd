@@ -51,7 +51,6 @@ ggplot(grades, aes(x=Exam)) +
 # Question 5
 
 ```{r}
-rename(grades, "grp_01"="grp_1")
 knitr::kable(grades |> 
   group_by(Group) |>
   summarise(n()),
@@ -84,7 +83,10 @@ ggplot(grades, aes(x=Exam, fill=Group))+
 ```{r}
 knitr::kable(grades |>
   group_by(Group) |>
-  summarise(sum(is.na(Exam))),
+  summarise(miss_exam_group= sum(is.na(Exam))),
   col.names= c("Group", "Number of students who missed the exam"))
 ```
+# Question 9
+
+
 
