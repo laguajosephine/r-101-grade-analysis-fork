@@ -48,3 +48,13 @@ ggplot(grades, aes(x=Exam)) +
   geom_bar(na.rm=TRUE)
 ```
 
+# Question 5
+
+```{r}
+knitr::kable(grades |> 
+  group_by(Group) |>
+  summarise(n()),
+  col.names = c("Group", "Number of students"))
+```
+
+
