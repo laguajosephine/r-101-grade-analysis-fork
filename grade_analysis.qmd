@@ -39,13 +39,14 @@ knitr::kable(grades |>
 miss_exam <- grades |> 
   count(is.na(Exam))
 ```
+
 `r miss_exam[2,2]` students didn't take the final exam.
 
 # Question 4
 
 ```{r}
 ggplot(grades, aes(x=Exam)) +
-  geom_bar(na.rm=TRUE)
+  geom_bar(fill = "darkblue",na.rm=TRUE)
 ```
 
 # Question 5
@@ -60,12 +61,15 @@ knitr::kable(grades |>
 # Question 6
 
 ```{r}
-ggplot(grades, aes(x=Group))+
-  geom_bar(na.rm=TRUE)
+gr <- ggplot(grades, aes(x=Group))+
+  geom_bar(fill = "darkviolet" ,na.rm=TRUE)
+gr + coord_flip()
 ```
 
 # Question 7
+
 First representation:
+
 ```{r}
 ggplot(grades, aes(x=Exam))+
   geom_bar(na.rm=TRUE)+
@@ -73,20 +77,127 @@ ggplot(grades, aes(x=Exam))+
 ```
 
 Second representation:
+
 ```{r}
-ggplot(grades, aes(x=Exam, fill=Group))+
+ggplot(grades, aes(x=Group, fill=Exam))+
   geom_bar(na.rm=TRUE)
 ```
+
 
 # Question 8
 
 ```{r}
-knitr::kable(grades |>
+missed_exam_group <- grades |>
   group_by(Group) |>
-  summarise(miss_exam_group= sum(is.na(Exam))),
-  col.names= c("Group", "Number of students who missed the exam"))
+  summarise(miss_exam_group= sum(is.na(Exam)))
+knitr::kable(missed_exam_group,
+             col.names= c("Group", "Number of students who missed the exam"))
 ```
+
 # Question 9
 
+```{r}
+ggplot(missed_exam_group, aes(miss_exam_group, Group))+
+  geom_col(fill = "darkred")+
+  scale_x_continuous("Number of students who missed the exam")
+```
 
+# Question 10
+
+```{r}
+long_grades <- grades |>
+  pivot_longer(cols = -c('Id','Group'), names_to = "name", values_to = "value")
+```
+# Question 11
+
+The number of missing grades in total for each student is:
+
+```{r}
+missing_grades <- long_grades |>
+  group_by(Id) |>
+  summarise(number_missing_grades = sum(is.na(value)))
+knitr::kable(missing_grades,
+             col.names = c("Student Id", "Number of missing grades"))
+
+```
+# Question 12
+
+Here is the graphical representation of the distribution of the missing grades per students:
+
+```{r}
+ggplot(missing_grades, aes(Id,number_missing_grades))+
+  geom_col()+
+  scale_y_continuous("Number of missing grades")
+```
+
+# Question 13
+
+```{r}
+library(stringr)
+```
+
+```{r}
+knitr::kable(long_grades |>
+               group_by(Group)|>
+               filter(str_starts(name, "Exam")) |>
+               summarise(sum(is.na(value))),
+             col.names = c("Group", "Number of students who missed the Exam"))
+```
+# Question 14
+
+```{r}
+missing_online <- long_grades |>
+  group_by(Id) |>
+  filter(str_starts(name, "Online")) |>
+  summarise(number_missing_online = sum(is.na(value)))
+knitr::kable(missing_online,
+             col.names = c("Id", "Number of missing grades for the online tests"))
+             
+```
+
+# Question 15
+
+```{r}
+# first we merge the two data frames : missing_online and grades
+new_grades <- merge(grades, missing_online, by= "Id")
+# then we represent the conditional distribution
+ggplot(new_grades, aes(x= number_missing_online, y = Exam))+
+  geom_point(na.rm=TRUE) +
+  scale_x_continuous("Number of missing grades for the online tests")
+```
+# Question 16
+
+```{r}
+mcq_missing <- long_grades |>
+  group_by(Id) |>
+  filter(str_starts(name, "MCQ")) |>
+  summarise(mcq_missing_true = anyNA(value))
+knitr::kable(mcq_missing,
+             col.names = c("Id", "Missed"))
+```
+# Question 17
+
+```{r}
+# first, we merge grades and mcq_missing
+grades2 <- merge(grades, mcq_missing, by = "Id")
+# then we create the table with the percentage
+percentage_mcq <- grades2 |>
+  group_by(Group) |>
+  summarise(P_missed = 100*sum(mcq_missing_true)/n())
+knitr::kable(percentage_mcq,
+             col.names = c("Group","P_missed"))
+```
+# Question 18
+
+```{r}
+# first, we compute the average grade at the Exam per group
+average_grade <- grades |>
+  group_by(Group) |>
+  summarise(average = sum(Exam,na.rm=TRUE)/n())
+# then, we merge average_grade and percentage_mcq
+merged <- merge(average_grade, percentage_mcq, by="Group")
+# then we represent the average grade as a function of P_missed
+ggplot(merged, aes(x= P_missed, y= average))+
+  geom_point()
+```
 
