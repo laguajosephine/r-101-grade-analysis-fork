@@ -23,7 +23,7 @@ grades <- vroom("grades.csv")
 
 # Question 2
 
-```{r}
+```{r question 2}
 knitr::kable(grades |> 
                summarise(min(Exam, na.rm = TRUE), 
                          max(Exam,na.rm = TRUE), 
@@ -35,7 +35,7 @@ knitr::kable(grades |>
 
 # Question 3
 
-```{r}
+```{r question 3}
 miss_exam <- grades |> 
   count(is.na(Exam))
 ```
@@ -44,14 +44,14 @@ miss_exam <- grades |>
 
 # Question 4
 
-```{r}
+```{r question 4}
 ggplot(grades, aes(x=Exam)) +
   geom_bar(fill = "darkblue",na.rm=TRUE)
 ```
 
 # Question 5
 
-```{r}
+```{r question 5}
 knitr::kable(grades |> 
   group_by(Group) |>
   summarise(n()),
@@ -60,9 +60,9 @@ knitr::kable(grades |>
 
 # Question 6
 
-```{r}
+```{r question 6}
 gr <- ggplot(grades, aes(x=Group))+
-  geom_bar(fill = "darkviolet" ,na.rm=TRUE)
+  geom_bar(fill = "darkviolet" ,na.rm=TRUE) 
 gr + coord_flip()
 ```
 
@@ -75,18 +75,21 @@ ggplot(grades, aes(x=Exam))+
   geom_bar(na.rm=TRUE)+
   facet_wrap(~Group)
 ```
+Since there are a lot of groups, we don't see anything clearly. This is not a good representation.
 
 Second representation:
 
 ```{r}
-ggplot(grades, aes(x=Group, fill=Exam))+
-  geom_bar(na.rm=TRUE)
+#| message: false
+ggplot(grades, aes(x=Group, y = Exam))+
+  geom_boxplot(na.rm = TRUE)+
+  coord_flip()
 ```
 
 
 # Question 8
 
-```{r}
+```{r question 8}
 missed_exam_group <- grades |>
   group_by(Group) |>
   summarise(miss_exam_group= sum(is.na(Exam)))
@@ -116,8 +119,7 @@ The number of missing grades in total for each student is:
 missing_grades <- long_grades |>
   group_by(Id) |>
   summarise(number_missing_grades = sum(is.na(value)))
-knitr::kable(missing_grades,
-             col.names = c("Student Id", "Number of missing grades"))
+missing_grades
 
 ```
 # Question 12
@@ -150,9 +152,7 @@ missing_online <- long_grades |>
   group_by(Id) |>
   filter(str_starts(name, "Online")) |>
   summarise(number_missing_online = sum(is.na(value)))
-knitr::kable(missing_online,
-             col.names = c("Id", "Number of missing grades for the online tests"))
-             
+missing_online     
 ```
 
 # Question 15
@@ -171,9 +171,8 @@ ggplot(new_grades, aes(x= number_missing_online, y = Exam))+
 mcq_missing <- long_grades |>
   group_by(Id) |>
   filter(str_starts(name, "MCQ")) |>
-  summarise(mcq_missing_true = anyNA(value))
-knitr::kable(mcq_missing,
-             col.names = c("Id", "Missed"))
+  summarise(Missed = anyNA(value))
+mcq_missing
 ```
 # Question 17
 
@@ -183,9 +182,8 @@ grades2 <- merge(grades, mcq_missing, by = "Id")
 # then we create the table with the percentage
 percentage_mcq <- grades2 |>
   group_by(Group) |>
-  summarise(P_missed = 100*sum(mcq_missing_true)/n())
-knitr::kable(percentage_mcq,
-             col.names = c("Group","P_missed"))
+  summarise(P_missed = 100*sum(Missed)/n())
+percentage_mcq
 ```
 # Question 18
 
